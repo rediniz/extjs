@@ -6,5 +6,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan("br.com.renato")
 public class SpringRootConfig {
+
 	
+
+
+	
+
 }

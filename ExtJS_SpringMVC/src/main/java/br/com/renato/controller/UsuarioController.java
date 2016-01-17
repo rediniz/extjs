@@ -2,8 +2,10 @@ package br.com.renato.controller;
 
 import java.util.List;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,6 +15,7 @@ import br.com.renato.model.Usuario;
 import br.com.renato.repository.UsuarioRepository;
 
 @Controller("usuarioController")
+@Transactional // Para dizer que essa classe será responsável por transações (utilizando o Repository)
 @RequestMapping(value="usuario/")
 public class UsuarioController {
 	

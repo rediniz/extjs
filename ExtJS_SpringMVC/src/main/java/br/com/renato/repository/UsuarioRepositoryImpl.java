@@ -1,49 +1,52 @@
 package br.com.renato.repository;
 
-import java.util.ArrayList;
-//1903000762
+
 import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+
 import br.com.renato.model.Usuario;
 
-@Repository("usuarioRepository")
+
+//Informar que é componente do Spring e um Repositório
+@Repository 
+@Component
 public class UsuarioRepositoryImpl implements UsuarioRepository {
 
-	List<Usuario> listaUsuarios = new ArrayList<Usuario>();
-	String nomes[] = { "Fulano", "Sicrano", "Beltrano" };
-
-	public UsuarioRepositoryImpl(){
-		carregarUsuarios();
-	}
+	
+	@PersistenceContext
+	EntityManager manager; // Ineja um gerenciador de entidade que é responsável por todas a comunicação com o banco
+	
+	
+	
+	@SuppressWarnings("unchecked")
 	public List<Usuario> listarUsuarios() {
 
-		return listaUsuarios;
-	}
-
-	private void carregarUsuarios() {
-		for (int i = 0; i < nomes.length; i++) {
-			Usuario u = new Usuario();
-			u.setId((long) i + 1);
-			u.setNome(nomes[i]);
-			u.setEmail(nomes[i].toLowerCase() + "@gmail.com");
-			listaUsuarios.add(u);
-		}
+		/*Seleciona todos os usuários do banco usando linguagem de consulta do Hibernate (HQL)
+		*(note que Usuario é o nome da classe modelo, e não da tabela no banco)
+		*/
+		return manager.createQuery("select u from Usuario u").getResultList();
 	}
 
 	public Usuario inserirUsuario(Usuario usuario) {
-		usuario.setId(((long) listaUsuarios.size() + 1));
-		listaUsuarios.add(usuario);
-		System.out.println("Usuário cadastrado > id = " + usuario.getId() + ", nome = " + usuario.getNome()
-				+ ", email = " + usuario.getEmail());
+		//.persist é responsável por inserir dados no banco.
+		manager.persist(usuario);
 		return usuario;
 	}
 	public Usuario apagarUsuario(Usuario usuario) {
-		for (int i = 0; i < listaUsuarios.size(); i++) {
-			if (usuario.getId() == listaUsuarios.get(i).getId()) {
-				listaUsuarios.remove(i);
-			}
-		}	
-		return usuario;
+		//.remove deleta linhas do banco
+		Usuario u = manager.find(Usuario.class, usuario.getId());
+		manager.remove(u);
+		return u;
 	}
+	
+	/*
+	 * Não utilizado, mas também existe o .merge que faz o update.
+	 * 
+	 */
 
 }
